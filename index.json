@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "issue": 1,
+    "kind": "Effect script",
+    "name": "Aurora",
+    "file": "scripts/0001-aurora.mle",
+    "description": "Layered noise curtains, each drifting on its own clock, read around the center of the grid. Works on a 2D panel and fills a 3D cube by depth. Controls: speed, zoom, fold, twist and contrast.\n\nThis is a sample entry, showing what a contribution looks like: it is the Aurora effect that ships with MoonLight.",
+    "media": "https://raw.githubusercontent.com/MoonModules/MoonLight/main/docs/assets/light/effects/AuroraEffect.gif",
+    "firmware": "6.0.0",
+    "author": "ewowi",
+    "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/1",
+    "votes": 0
+  }
+]
