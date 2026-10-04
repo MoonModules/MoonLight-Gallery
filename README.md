@@ -18,7 +18,7 @@ The discussion stays on that issue, and the file itself lives here once it is ac
 
 Open the entry's issue first: it shows what the entry does and anything it needs, such as a panel size or a microphone.
 
-- **A preset**: in the File Manager, turn on hidden files and upload it into `/.config/presets`, and it appears as a pad on the Control card. Or send it straight to the device with `curl -X PATCH --data @preset.json http://<device>/api/state`.
+- **A preset**: the Gallery on the Control card installs it onto a pad with one click. By hand, upload it into `/.config/presets` in the File Manager with hidden files shown, or send it straight to the device with `curl -X PATCH --data @preset.json http://<device>/api/state`.
 - **A script**: upload it into `/moonlive` with the File Manager, or paste it into the MoonLive editor, and pick it as you pick any effect, layout or modifier.
 
 An entry made on a newer MoonLight than yours may use something your device does not have yet; update first.

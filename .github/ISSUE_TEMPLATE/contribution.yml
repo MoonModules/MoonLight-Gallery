@@ -54,7 +54,7 @@ body:
     id: file
     attributes:
       label: File
-      description: Paste the whole file. A preset is the JSON from its file in /.config/presets; a script is its source from the MoonLive editor.
+      description: Paste the whole file. A preset is the JSON a card's { } button shows, or a file from /.config/presets; a script is its source from the MoonLive editor.
       render: text
     validations:
       required: true

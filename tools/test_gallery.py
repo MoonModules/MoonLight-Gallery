@@ -70,6 +70,11 @@ class Refusing(unittest.TestCase):
         e = gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean", "brightness": 40}}', "[1, 2]"))
         self.assertTrue(any("JSON object" in p for p in gallery.problems(e)))
 
+    def test_a_flat_preset_from_an_older_moonlight_is_refused_with_the_conversion(self):
+        flat = '{"captures": "Effects", "Effects.0.type": "Layer", "Effects.enabled": true}'
+        e = gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean", "brightness": 40}}', flat))
+        self.assertTrue(any("flat format" in p and "restore" in p for p in gallery.problems(e)))
+
     def test_no_picture_and_no_license_are_both_named(self):
         e = gallery.parse(BODY.replace("![drift](https://github.com/user-attachments/assets/1234-abcd)", "").replace("- [X]", "- [ ]"))
         found = gallery.problems(e)

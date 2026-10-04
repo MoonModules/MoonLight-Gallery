@@ -97,6 +97,8 @@ def problems(entry: dict) -> list:
         else:
             if not isinstance(doc, dict) or not doc:
                 found.append("File: a preset is a JSON object naming the modules it sets, such as {\"Drivers\": {\"brightness\": 40}}.")
+            elif "captures" in doc or any("." in k for k in doc):
+                found.append("File: this is the flat format an older MoonLight saved presets in; back up and restore the device holding it, which converts it, then paste the file again.")
     return found
 
 
