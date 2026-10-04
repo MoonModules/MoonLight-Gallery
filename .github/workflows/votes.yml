@@ -1,0 +1,34 @@
+name: Count the votes
+
+# A vote is a 👍 on an entry's issue; once a day each accepted entry's count is written into index.json, so a reader of the gallery needs no API call of its own.
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: gallery-index   # the same group accept.yml uses, since both rewrite index.json
+
+jobs:
+  votes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Count
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/gallery.py votes
+      - name: Commit
+        run: |
+          if git diff --quiet index.json; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Count the votes"
+          git push

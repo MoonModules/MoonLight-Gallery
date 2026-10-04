@@ -106,5 +106,23 @@ class Filing(unittest.TestCase):
             self.assertEqual(path.parent.name, "scripts")
 
 
+class Voting(unittest.TestCase):
+    def test_a_vote_is_a_thumbs_up_on_the_entrys_issue(self):
+        issues = [{"number": 7, "reactions": {"+1": 3, "-1": 1}}, {"number": 9, "reactions": {}},
+                  {"number": 11, "pull_request": {}, "reactions": {"+1": 5}}]
+        self.assertEqual(gallery.votes_from(issues), {7: 3, 9: 0})
+
+    def test_the_index_changes_only_when_a_count_does(self):
+        index = [{"issue": 7, "votes": 3}, {"issue": 9}]
+        self.assertTrue(gallery.apply_votes(index, {7: 3, 9: 2}))
+        self.assertEqual(index, [{"issue": 7, "votes": 3}, {"issue": 9, "votes": 2}])
+        self.assertFalse(gallery.apply_votes(index, {7: 3, 9: 2}))
+
+    def test_an_accepted_entry_starts_with_its_votes_so_far(self):
+        with tempfile.TemporaryDirectory() as d:
+            gallery.accept(gallery.parse(BODY), 7, "someone", "", Path(d), votes=4)
+            self.assertEqual(json.loads((Path(d) / "index.json").read_text())[0]["votes"], 4)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -6,13 +6,15 @@ GitHub renders each form field as a `### Label` section of the issue body, so th
 The workflows call this script, with the issue's fields in environment variables rather than in the command line, so nothing a contributor types reaches a shell.
 
     python tools/gallery.py check    # ISSUE_BODY; prints what to fix, exit 1 when anything is
-    python tools/gallery.py accept   # ISSUE_BODY, ISSUE_NUMBER, ISSUE_AUTHOR, ISSUE_URL; writes the file and index.json
+    python tools/gallery.py accept   # ISSUE_BODY, ISSUE_NUMBER, ISSUE_AUTHOR, ISSUE_URL, ISSUE_VOTES; writes the file and index.json
+    python tools/gallery.py votes    # GITHUB_REPOSITORY, GH_TOKEN; refreshes each entry's 👍 count in index.json
 """
 
 import json
 import os
 import re
 import sys
+import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -104,7 +106,38 @@ def slug(name: str) -> str:
     return s[:48] or "untitled"
 
 
-def accept(entry: dict, number: int, author: str, url: str, root: Path = ROOT) -> Path:
+def votes_from(issues: list) -> dict:
+    """Each issue's 👍 count, by issue number, from the GitHub API's issue list."""
+    return {i["number"]: int(i.get("reactions", {}).get("+1", 0)) for i in issues if "pull_request" not in i}
+
+
+def apply_votes(index: list, votes: dict) -> bool:
+    """Set each entry's votes from the counts; True when any changed, so an unchanged index is not rewritten."""
+    changed = False
+    for e in index:
+        n = votes.get(e["issue"], e.get("votes", 0))
+        if e.get("votes") != n:
+            e["votes"] = n
+            changed = True
+    return changed
+
+
+def fetch_votes(repo: str, token: str) -> dict:
+    """The 👍 counts of every accepted issue, page by page."""
+    votes, page = {}, 1
+    while True:
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/issues?labels=accepted&state=all&per_page=100&page={page}",
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            issues = json.loads(r.read())
+        votes.update(votes_from(issues))
+        if len(issues) < 100:
+            return votes
+        page += 1
+
+
+def accept(entry: dict, number: int, author: str, url: str, root: Path = ROOT, votes: int = 0) -> Path:
     """Write the contribution's file and its index entry, replacing an earlier acceptance of the same issue; return the file's path."""
     folder, ext = KINDS[entry["kind"]]
     index_path = root / "index.json"
@@ -128,6 +161,7 @@ def accept(entry: dict, number: int, author: str, url: str, root: Path = ROOT) -
         "firmware": entry["firmware"],
         "author": author,
         "url": url,
+        "votes": votes,
     })
     index.sort(key=lambda e: e["issue"])
     index_path.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -136,6 +170,12 @@ def accept(entry: dict, number: int, author: str, url: str, root: Path = ROOT) -
 
 def main() -> int:
     command = sys.argv[1] if len(sys.argv) > 1 else ""
+    if command == "votes":
+        index = json.loads(INDEX.read_text(encoding="utf-8"))
+        if apply_votes(index, fetch_votes(os.environ["GITHUB_REPOSITORY"], os.environ["GH_TOKEN"])):
+            INDEX.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+            print("votes changed")
+        return 0
     entry = parse(os.environ.get("ISSUE_BODY", ""))
     found = problems(entry)
     if command == "check":
@@ -146,7 +186,7 @@ def main() -> int:
             print("\n".join(f"- {p}" for p in found))
             return 1
         path = accept(entry, int(os.environ["ISSUE_NUMBER"]), os.environ.get("ISSUE_AUTHOR", ""),
-                      os.environ.get("ISSUE_URL", ""))
+                      os.environ.get("ISSUE_URL", ""), votes=int(os.environ.get("ISSUE_VOTES") or 0))
         print(path.relative_to(ROOT).as_posix())
         return 0
     print(__doc__)
