@@ -31,7 +31,7 @@ The counts go into `index.json` once a day, so the gallery can show what people 
 ## Sharing your own
 
 1. Open a new issue and choose **Share a preset or script**.
-2. Fill in every field: the kind, a name, what it does, a picture or video, the MoonLight version, and the file's contents.
+2. Fill in every field: the kind, a name, what it does, a picture or video, the MoonLight version, and the file's contents. GitHub takes videos up to 10 MB; for a longer one, paste a link, such as an unlisted YouTube video.
 3. Tick the CC0 box, which lets anyone use it.
 
 A check runs as soon as you submit and on every edit, and says in the issue what is still missing.

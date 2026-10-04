@@ -39,7 +39,7 @@ body:
     id: media
     attributes:
       label: Picture or video
-      description: Drag a picture or a short video in here; people choose by how it looks.
+      description: Drag a picture or a short video in here; people choose by how it looks. GitHub takes videos up to 10 MB, so for a longer one paste a link instead, such as an unlisted YouTube video. The first picture or link is the gallery's thumbnail.
     validations:
       required: true
   - type: input
