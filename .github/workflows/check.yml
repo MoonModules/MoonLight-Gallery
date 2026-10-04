@@ -1,0 +1,39 @@
+name: Check a contribution
+
+# On every submission and edit: say in the issue what is missing, or mark it ready for a maintainer.
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    if: contains(github.event.issue.labels.*.name, 'contribution')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the form
+        id: check
+        # The body arrives through the environment, never in the command, so nothing typed reaches the shell.
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          if python tools/gallery.py check > problems.md; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          OK: ${{ steps.check.outputs.ok }}
+        run: |
+          if [ "$OK" = "true" ]; then
+            gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --add-label ready --remove-label needs-fix
+          else
+            { echo "Almost there. Edit the issue to fix:"; echo; cat problems.md; } > comment.md
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file comment.md
+            gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --add-label needs-fix --remove-label ready
+          fi

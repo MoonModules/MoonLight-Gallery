@@ -1,0 +1,67 @@
+name: Share a preset or script
+description: Add a preset or a MoonLive script to the gallery.
+title: "[Gallery] "
+labels: ["contribution"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing. Fill in every field; a check runs on submit and on every edit, and says here what is missing.
+        Discussion happens in the comments. When a maintainer accepts it, the file is added to the gallery and this issue closes.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - Preset
+        - Effect script
+        - Layout script
+        - Modifier script
+        - Service script
+        - Palette script
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Name
+      placeholder: Ocean Drift
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What it does
+      description: What it shows or does, and anything it needs, such as a panel size or a microphone.
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Picture or video
+      description: Drag a picture or a short video in here; people choose by how it looks.
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: MoonLight version
+      description: The version you made it on, from the Firmware card.
+      placeholder: 6.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: file
+    attributes:
+      label: File
+      description: Paste the whole file. A preset is the JSON from its file in /.config/presets; a script is its source from the MoonLive editor.
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: license
+    attributes:
+      label: License
+      options:
+        - label: I dedicate this file to the public domain under CC0 1.0, so anyone may use it for any purpose.
+          required: true

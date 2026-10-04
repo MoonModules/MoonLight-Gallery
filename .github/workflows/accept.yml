@@ -1,0 +1,58 @@
+name: Accept a contribution
+
+# A maintainer adds the `accepted` label: the file and its index entry are committed, and the issue closes with a link.
+# Adding a label needs triage rights, so accepting stays a maintainer's decision.
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: gallery-index   # one accept at a time, since each rewrites index.json
+
+jobs:
+  accept:
+    if: github.event.label.name == 'accepted' && contains(github.event.issue.labels.*.name, 'contribution')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: File it
+        id: file
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        run: |
+          if python tools/gallery.py accept > result.md; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Commit
+        if: steps.file.outputs.ok == 'true'
+        env:
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A presets scripts index.json
+          git commit -m "Add #$NUMBER to the gallery"
+          git push
+      - name: Report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          OK: ${{ steps.file.outputs.ok }}
+        run: |
+          if [ "$OK" = "true" ]; then
+            FILE=$(cat result.md)
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body "Added to the gallery as [\`$FILE\`](https://github.com/$GITHUB_REPOSITORY/blob/main/$FILE). Thank you."
+            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY"
+          else
+            { echo "Not added yet. Edit the issue to fix, then a maintainer accepts it again:"; echo; cat result.md; } > comment.md
+            gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file comment.md
+            gh issue edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --remove-label accepted --add-label needs-fix
+          fi
