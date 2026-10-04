@@ -1,0 +1,38 @@
+{
+  "Effects": {
+    "$patch": "replace",
+    "enabled": true,
+    "Layer": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 0,
+      "opacity": 12,
+      "enabled": true,
+      "Plasma": {
+        "type": "PlasmaEffect",
+        "$patch": "replace",
+        "bpm": 4,
+        "scale_x": 255,
+        "scale_y": 255,
+        "hue_shift": 237,
+        "enabled": true
+      }
+    },
+    "Layer-2": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 255,
+      "enabled": true,
+      "BeatRipples": {
+        "type": "BeatRipplesEffect",
+        "$patch": "replace",
+        "damping": 251,
+        "drop": 180,
+        "rain": 243,
+        "shine": 231,
+        "enabled": true
+      }
+    }
+  }
+}
