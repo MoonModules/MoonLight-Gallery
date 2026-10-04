@@ -10,5 +10,17 @@
     "author": "ewowi",
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/1",
     "votes": 0
+  },
+  {
+    "issue": 3,
+    "kind": "Preset",
+    "name": "Night Harbor",
+    "file": "presets/0003-night-harbor.json",
+    "description": "A night harbor in six layers, each placed on part of the panel with a Region modifier: a slow sky, twinkling stars, a ringed moon, a rippling sea, a shimmering horizon and sparks over the water.\n\nThe regions are percentages, so it fits any 2D panel; it was made on 128x128. It also shows what a region buys: the moon's Rings costs about 2 ms in its small box, where full-screen it costs 60 ms. On an ESP32-S3 at 128x128 it runs at 20 fps.\n\nNeeds a MoonLight build with presets as state documents (after 6.0.0).",
+    "media": "https://github.com/user-attachments/assets/ac493ab5-e645-48d7-96c8-cb8989476545",
+    "firmware": "6.0.0",
+    "author": "ewowi",
+    "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/3",
+    "votes": 0
   }
 ]

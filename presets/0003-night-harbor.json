@@ -1,0 +1,163 @@
+{
+  "Effects": {
+    "$patch": "replace",
+    "enabled": true,
+    "Sky": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 0,
+      "opacity": 110,
+      "enabled": true,
+      "sky": {
+        "type": "DistortionWavesEffect",
+        "$patch": "replace",
+        "freq_x": 1,
+        "freq_y": 1,
+        "speed": 15,
+        "enabled": true
+      },
+      "skyArea": {
+        "type": "RegionModifier",
+        "$patch": "replace",
+        "startX": 0,
+        "startY": 0,
+        "startZ": 0,
+        "endX": 100,
+        "endY": 62,
+        "endZ": 100,
+        "enabled": true
+      }
+    },
+    "Stars": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 255,
+      "enabled": true,
+      "stars": {
+        "type": "StarSkyEffect",
+        "$patch": "replace",
+        "speed": 1,
+        "star_fill_ratio": 42,
+        "usePalette": false,
+        "enabled": true
+      },
+      "starsArea": {
+        "type": "RegionModifier",
+        "$patch": "replace",
+        "startX": 0,
+        "startY": 0,
+        "startZ": 0,
+        "endX": 100,
+        "endY": 50,
+        "endZ": 100,
+        "enabled": true
+      }
+    },
+    "Moon": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 220,
+      "enabled": true,
+      "moon": {
+        "type": "RingsEffect",
+        "$patch": "replace",
+        "count": 2,
+        "speed": 30,
+        "thickness": 3,
+        "hue_shift": 0,
+        "enabled": true
+      },
+      "moonArea": {
+        "type": "RegionModifier",
+        "$patch": "replace",
+        "startX": 68,
+        "startY": 8,
+        "startZ": 0,
+        "endX": 86,
+        "endY": 26,
+        "endZ": 100,
+        "enabled": true
+      }
+    },
+    "Sea": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 0,
+      "opacity": 200,
+      "enabled": true,
+      "sea": {
+        "type": "RipplesEffect",
+        "$patch": "replace",
+        "speed": 50,
+        "interval": 128,
+        "enabled": true
+      },
+      "seaArea": {
+        "type": "RegionModifier",
+        "$patch": "replace",
+        "startX": 0,
+        "startY": 62,
+        "startZ": 0,
+        "endX": 100,
+        "endY": 100,
+        "endZ": 100,
+        "enabled": true
+      }
+    },
+    "Horizon": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 150,
+      "enabled": true,
+      "shimmer": {
+        "type": "LissajousEffect",
+        "$patch": "replace",
+        "xFrequency": 64,
+        "fadeRate": 128,
+        "speed": 128,
+        "enabled": true
+      },
+      "horizonArea": {
+        "type": "RegionModifier",
+        "$patch": "replace",
+        "startX": 0,
+        "startY": 56,
+        "startZ": 0,
+        "endX": 100,
+        "endY": 68,
+        "endZ": 100,
+        "enabled": true
+      }
+    },
+    "Sparks": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 200,
+      "enabled": true,
+      "sparks": {
+        "type": "StarFieldEffect",
+        "$patch": "replace",
+        "speed": 20,
+        "numStars": 16,
+        "blur": 128,
+        "usePalette": false,
+        "enabled": true
+      },
+      "sparksArea": {
+        "type": "RegionModifier",
+        "$patch": "replace",
+        "startX": 0,
+        "startY": 68,
+        "startZ": 0,
+        "endX": 100,
+        "endY": 100,
+        "endZ": 100,
+        "enabled": true
+      }
+    }
+  }
+}
