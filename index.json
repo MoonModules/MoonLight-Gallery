@@ -37,5 +37,17 @@
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/3",
     "votes": 0,
     "thumb": "thumbs/0003.webp"
+  },
+  {
+    "issue": 4,
+    "kind": "Preset",
+    "name": "Classics Remixed",
+    "file": "presets/0004-classics-remixed.json",
+    "description": "Some of the greats WLED-MM with a lil bit of ML sprinkled on top.\n\nStyle: pretty normal \nMusic pairing: Scooter probably? \n\nPalette: spectrum.",
+    "media": "https://github.com/user-attachments/assets/387a2b10-34d1-4ee8-850b-c1f249076084",
+    "firmware": "6.1.0",
+    "author": "wompslab",
+    "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/4",
+    "votes": 0
   }
 ]

@@ -1,0 +1,58 @@
+{
+  "Effects": {
+    "$patch": "replace",
+    "enabled": true,
+    "Layer-2": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 0,
+      "opacity": 255,
+      "enabled": true,
+      "GEQ3D": {
+        "type": "GEQ3DEffect",
+        "$patch": "replace",
+        "speed": 9,
+        "frontFill": 131,
+        "horizon": 98,
+        "depth": 59,
+        "numBands": 8,
+        "borders": true,
+        "enabled": true
+      }
+    },
+    "Layer": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 236,
+      "enabled": true,
+      "PaintBrush": {
+        "type": "PaintBrushEffect",
+        "$patch": "replace",
+        "oscillatorOffset": 3,
+        "numLines": 255,
+        "fadeRate": 40,
+        "minLength": 0,
+        "color_chaos": true,
+        "phase_chaos": false,
+        "enabled": true
+      }
+    },
+    "Layer-3": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 255,
+      "enabled": true,
+      "comet-trail": {
+        "type": "MoonLiveEffect",
+        "$patch": "replace",
+        "script": "comet-trail.mle",
+        "speed": 114,
+        "spread": 134,
+        "sparks": 10,
+        "enabled": true
+      }
+    }
+  }
+}
