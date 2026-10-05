@@ -1,6 +1,6 @@
 name: Count the votes
 
-# A vote is a 👍 on an entry's issue; once a day each accepted entry's count is written into index.json, so a reader of the gallery needs no API call of its own.
+# A vote is a 👍, ❤️, 🎉, 🚀 or 😄 on an entry's issue; once a day each accepted entry's count is written into index.json, so a reader of the gallery needs no API call of its own.
 on:
   schedule:
     - cron: "17 4 * * *"

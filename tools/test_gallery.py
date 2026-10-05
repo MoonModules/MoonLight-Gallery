@@ -112,10 +112,14 @@ class Filing(unittest.TestCase):
 
 
 class Voting(unittest.TestCase):
-    def test_a_vote_is_a_thumbs_up_on_the_entrys_issue(self):
-        issues = [{"number": 7, "reactions": {"+1": 3, "-1": 1}}, {"number": 9, "reactions": {}},
-                  {"number": 11, "pull_request": {}, "reactions": {"+1": 5}}]
-        self.assertEqual(gallery.votes_from(issues), {7: 3, 9: 0})
+    def test_a_vote_is_a_liking_reaction_on_the_entrys_issue(self):
+        issues = [{"number": 7, "reactions": {"+1": 3, "heart": 2, "hooray": 1, "rocket": 1, "-1": 4, "confused": 1, "laugh": 1, "eyes": 1}},
+                  {"number": 9, "reactions": {}}, {"number": 11, "pull_request": {}, "reactions": {"+1": 5}}]
+        self.assertEqual(gallery.votes_from(issues), {7: 8, 9: 0})
+
+    def test_an_entry_accepted_with_a_heart_starts_with_one_vote(self):
+        self.assertEqual(gallery.likes({"heart": 1, "url": "https://api.github.com/x", "total_count": 1}), 1)
+        self.assertEqual(gallery.likes(None), 0)
 
     def test_the_index_changes_only_when_a_count_does(self):
         index = [{"issue": 7, "votes": 3}, {"issue": 9}]

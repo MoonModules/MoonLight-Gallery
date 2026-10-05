@@ -29,7 +29,7 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
-          ISSUE_VOTES: ${{ github.event.issue.reactions['+1'] }}
+          ISSUE_REACTIONS: ${{ toJSON(github.event.issue.reactions) }}
         run: |
           if python tools/gallery.py accept > result.md; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; fi
       - name: Thumbnail

@@ -6,8 +6,8 @@ GitHub renders each form field as a `### Label` section of the issue body, so th
 The workflows call this script, with the issue's fields in environment variables rather than in the command line, so nothing a contributor types reaches a shell.
 
     python tools/gallery.py check    # ISSUE_BODY; prints what to fix, exit 1 when anything is
-    python tools/gallery.py accept   # ISSUE_BODY, ISSUE_NUMBER, ISSUE_AUTHOR, ISSUE_URL, ISSUE_VOTES; writes the file and index.json
-    python tools/gallery.py votes    # GITHUB_REPOSITORY, GH_TOKEN; refreshes each entry's 👍 count in index.json
+    python tools/gallery.py accept   # ISSUE_BODY, ISSUE_NUMBER, ISSUE_AUTHOR, ISSUE_URL, ISSUE_REACTIONS; writes the file and index.json
+    python tools/gallery.py votes    # GITHUB_REPOSITORY, GH_TOKEN; refreshes each entry's like count in index.json
     python tools/gallery.py thumbs   # makes the still thumbnail of every entry that has none, with ffmpeg
 """
 
@@ -113,9 +113,18 @@ def slug(name: str) -> str:
     return s[:48] or "untitled"
 
 
+# A like is any reaction that says so; 👎 and 😕 are left out rather than subtracted, so one dissenting click cannot sink an entry.
+LIKES = ("+1", "heart", "hooray", "rocket", "laugh")
+
+
+def likes(reactions: dict) -> int:
+    """How many people like an issue: its 👍, ❤️, 🎉, 🚀 and 😄 together."""
+    return sum(int((reactions or {}).get(k) or 0) for k in LIKES)
+
+
 def votes_from(issues: list) -> dict:
-    """Each issue's 👍 count, by issue number, from the GitHub API's issue list."""
-    return {i["number"]: int(i.get("reactions", {}).get("+1", 0)) for i in issues if "pull_request" not in i}
+    """Each issue's likes, by issue number, from the GitHub API's issue list."""
+    return {i["number"]: likes(i.get("reactions")) for i in issues if "pull_request" not in i}
 
 
 def apply_votes(index: list, votes: dict) -> bool:
@@ -130,7 +139,7 @@ def apply_votes(index: list, votes: dict) -> bool:
 
 
 def fetch_votes(repo: str, token: str) -> dict:
-    """The 👍 counts of every accepted issue, page by page."""
+    """The likes of every accepted issue, page by page."""
     votes, page = {}, 1
     while True:
         req = urllib.request.Request(
@@ -250,7 +259,7 @@ def main() -> int:
             print("\n".join(f"- {p}" for p in found))
             return 1
         path = accept(entry, int(os.environ["ISSUE_NUMBER"]), os.environ.get("ISSUE_AUTHOR", ""),
-                      os.environ.get("ISSUE_URL", ""), votes=int(os.environ.get("ISSUE_VOTES") or 0))
+                      os.environ.get("ISSUE_URL", ""), votes=likes(json.loads(os.environ.get("ISSUE_REACTIONS") or "{}")))
         print(path.relative_to(ROOT).as_posix())
         return 0
     print(__doc__)
