@@ -18,7 +18,7 @@
     "name": "Brainworms",
     "file": "presets/0002-brainworms.json",
     "description": "Vibes: Organic, slightly unsettling - **could be stroboscopic if you make it so, if that's bad for you don't do that**\n\nApply preset as per attached.\n\nWorks well on big screens but can be a resource hog, dial back intensity by adjusting damping settings if required,\n\nPallete recommnendation: Spectrum Script for increase audio response (see video) \n\nMusic pairing: A cheeky bit of scottish techno - Perc if you're feeling sophisticated, Scott Brown if your not.",
-    "media": "https://github.com/user-attachments/assets/51772eee-9576-46eb-ba4b-ccedb6213da0",
+    "media": "https://github.com/user-attachments/assets/8f7867c1-73ff-459b-84fe-96070362bf60",
     "firmware": "6.0",
     "author": "wompslab",
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/2",
@@ -48,6 +48,7 @@
     "firmware": "6.1.0",
     "author": "wompslab",
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/4",
-    "votes": 0
+    "votes": 0,
+    "thumb": "thumbs/0004.webp"
   }
 ]
