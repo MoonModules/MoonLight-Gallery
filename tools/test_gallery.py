@@ -129,5 +129,49 @@ class Voting(unittest.TestCase):
             self.assertEqual(json.loads((Path(d) / "index.json").read_text())[0]["votes"], 4)
 
 
+
+class Thumbnails(unittest.TestCase):
+    def test_a_youtube_link_takes_its_own_still_and_anything_else_is_read_as_it_is(self):
+        self.assertEqual(gallery.thumb_source("https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=3"), "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg")
+        self.assertEqual(gallery.thumb_source("https://youtu.be/dQw4w9WgXcQ"), "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg")
+        self.assertEqual(gallery.thumb_source("https://github.com/user-attachments/assets/1234-abcd"), "https://github.com/user-attachments/assets/1234-abcd")
+
+    def test_every_entry_without_a_thumbnail_gets_one_by_its_issue_and_an_unreadable_one_keeps_none(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "thumbs").mkdir()
+            (root / "thumbs" / "0001.webp").write_bytes(b"old")
+            index = [{"issue": 1, "media": "https://x/1.gif", "thumb": "thumbs/0001.webp"},
+                     {"issue": 2, "media": "https://x/2.mp4"},
+                     {"issue": 3, "media": "https://x/broken"}]
+            fetched = []
+            def fetch(url, dest):
+                if url.endswith("broken"):
+                    raise OSError("404")
+                fetched.append(url)
+                dest.write_bytes(b"media")
+            def still(src, dest):
+                dest.write_bytes(b"webp")
+            self.assertTrue(gallery.make_thumbs(index, root, fetch, still))
+            self.assertEqual(fetched, ["https://x/2.mp4"])   # the one that has a thumbnail is not fetched again
+            self.assertEqual(index[1]["thumb"], "thumbs/0002.webp")
+            self.assertTrue((root / "thumbs" / "0002.webp").exists())
+            self.assertNotIn("thumb", index[2])
+            self.assertFalse(gallery.make_thumbs(index[:2], root, fetch, still))
+
+    def test_re_accepting_an_issue_drops_its_thumbnail_so_a_new_picture_gets_a_new_one(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            gallery.accept(gallery.parse(BODY), 7, "a", "u", root)
+            index = json.loads((root / "index.json").read_text())
+            (root / "thumbs").mkdir()
+            (root / "thumbs" / "0007.webp").write_bytes(b"old")
+            index[0]["thumb"] = "thumbs/0007.webp"
+            (root / "index.json").write_text(json.dumps(index))
+            gallery.accept(gallery.parse(BODY), 7, "a", "u", root)
+            self.assertFalse((root / "thumbs" / "0007.webp").exists())
+            self.assertNotIn("thumb", json.loads((root / "index.json").read_text())[0])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -8,12 +8,15 @@ The workflows call this script, with the issue's fields in environment variables
     python tools/gallery.py check    # ISSUE_BODY; prints what to fix, exit 1 when anything is
     python tools/gallery.py accept   # ISSUE_BODY, ISSUE_NUMBER, ISSUE_AUTHOR, ISSUE_URL, ISSUE_VOTES; writes the file and index.json
     python tools/gallery.py votes    # GITHUB_REPOSITORY, GH_TOKEN; refreshes each entry's 👍 count in index.json
+    python tools/gallery.py thumbs   # makes the still thumbnail of every entry that has none, with ffmpeg
 """
 
 import json
 import os
 import re
+import subprocess
 import sys
+import tempfile
 import urllib.request
 from pathlib import Path
 
@@ -31,6 +34,8 @@ KINDS = {
 }
 MAX_FILE_BYTES = 64 * 1024   # far past any real preset or script; a larger paste is a mistake
 NO_RESPONSE = "_No response_"   # what GitHub writes for an empty optional field
+THUMB_SIZE = 240   # a square tile in the browsing grid, about 15 KB as WebP, so a page of twelve costs less than one GIF
+MAX_MEDIA_BYTES = 100 * 1024 * 1024   # GitHub's own upload limit for a video
 
 
 def sections(body: str) -> dict:
@@ -144,9 +149,11 @@ def accept(entry: dict, number: int, author: str, url: str, root: Path = ROOT, v
     folder, ext = KINDS[entry["kind"]]
     index_path = root / "index.json"
     index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else []
-    # One file per issue: a re-accepted issue replaces its file, even under a new name.
+    # One file per issue: a re-accepted issue replaces its file, even under a new name, and its thumbnail, since the picture may have changed.
     for old in [e for e in index if e.get("issue") == number]:
         (root / old["file"]).unlink(missing_ok=True)
+        if old.get("thumb"):
+            (root / old["thumb"]).unlink(missing_ok=True)
     index = [e for e in index if e.get("issue") != number]
     rel = f"{folder}/{number:04d}-{slug(entry['name'])}{ext}"
     path = root / rel
@@ -170,6 +177,56 @@ def accept(entry: dict, number: int, author: str, url: str, root: Path = ROOT, v
     return path
 
 
+def thumb_source(media: str) -> str:
+    """Where a thumbnail's frame comes from: a YouTube link's own still, any other picture or video as it is."""
+    m = re.search(r"(?:youtube\.com/(?:watch\?v=|shorts/|embed/)|youtu\.be/)([\w-]{11})", media)
+    return f"https://img.youtube.com/vi/{m.group(1)}/hqdefault.jpg" if m else media
+
+
+def download(url: str, dest: Path) -> None:
+    """Fetch a picture or video, following GitHub's redirect for an uploaded one, refusing one larger than an upload can be."""
+    with urllib.request.urlopen(url, timeout=60) as r, open(dest, "wb") as f:
+        size = 0
+        while chunk := r.read(1 << 16):
+            size += len(chunk)
+            if size > MAX_MEDIA_BYTES:
+                raise ValueError("larger than an upload can be")
+            f.write(chunk)
+
+
+def frame(src: Path, dest: Path) -> None:
+    """One square still as WebP: a second in, past a fade from black, or the first frame of something shorter."""
+    scale = f"scale={THUMB_SIZE}:{THUMB_SIZE}:force_original_aspect_ratio=increase,crop={THUMB_SIZE}:{THUMB_SIZE}"
+    for seek in (["-ss", "1"], []):
+        dest.unlink(missing_ok=True)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *seek, "-i", str(src), "-frames:v", "1", "-vf", scale, "-q:v", "70", str(dest)],
+                       capture_output=True, timeout=120)
+        if dest.exists() and dest.stat().st_size:
+            return
+    raise ValueError("ffmpeg made no frame")
+
+
+def make_thumbs(index: list, root: Path = ROOT, fetch=download, still=frame) -> bool:
+    """Give every entry without a thumbnail one under thumbs/, named by its issue; True when any was made. An entry whose picture cannot be read keeps none, and the gallery shows its kind instead."""
+    made = False
+    for e in index:
+        if e.get("thumb") and (root / e["thumb"]).exists():
+            continue
+        rel = f"thumbs/{e['issue']:04d}.webp"
+        (root / "thumbs").mkdir(exist_ok=True)
+        try:
+            with tempfile.TemporaryDirectory() as td:
+                src = Path(td) / "media"
+                fetch(thumb_source(e.get("media", "")), src)
+                still(src, root / rel)
+        except Exception as err:   # one unreadable picture leaves that entry without a thumbnail, not the rest
+            print(f"#{e['issue']}: no thumbnail ({err})", file=sys.stderr)
+            continue
+        e["thumb"] = rel
+        made = True
+    return made
+
+
 def main() -> int:
     command = sys.argv[1] if len(sys.argv) > 1 else ""
     if command == "votes":
@@ -177,6 +234,11 @@ def main() -> int:
         if apply_votes(index, fetch_votes(os.environ["GITHUB_REPOSITORY"], os.environ["GH_TOKEN"])):
             INDEX.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
             print("votes changed")
+        return 0
+    if command == "thumbs":
+        index = json.loads(INDEX.read_text(encoding="utf-8"))
+        if make_thumbs(index):
+            INDEX.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         return 0
     entry = parse(os.environ.get("ISSUE_BODY", ""))
     found = problems(entry)

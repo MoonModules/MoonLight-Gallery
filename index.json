@@ -9,7 +9,8 @@
     "firmware": "6.0.0",
     "author": "ewowi",
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/1",
-    "votes": 0
+    "votes": 0,
+    "thumb": "thumbs/0001.webp"
   },
   {
     "issue": 2,
@@ -21,7 +22,8 @@
     "firmware": "6.0",
     "author": "wompslab",
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/2",
-    "votes": 1
+    "votes": 1,
+    "thumb": "thumbs/0002.webp"
   },
   {
     "issue": 3,
@@ -33,6 +35,7 @@
     "firmware": "6.0.0",
     "author": "ewowi",
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/3",
-    "votes": 0
+    "votes": 0,
+    "thumb": "thumbs/0003.webp"
   }
 ]

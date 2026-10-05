@@ -13,6 +13,7 @@ The discussion stays on that issue, and the file itself lives here once it is ac
 | `scripts/` | MoonLive scripts: effects (`.mle`), layouts (`.mll`), modifiers (`.mlm`), services (`.mls`) and palettes (`.mlp`) | a file in `/moonlive`, or pasted into the MoonLive editor |
 
 [`index.json`](index.json) lists every entry with its name, kind, file, picture or video, author, the MoonLight version it was made on, the issue where it was discussed, and its votes.
+`thumbs/` holds a small still of each entry's picture or video, made when it is accepted, which the Gallery browses by before an entry is opened.
 
 ## Installing an entry
 
