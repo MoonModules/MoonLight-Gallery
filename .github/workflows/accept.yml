@@ -33,9 +33,11 @@ jobs:
         run: |
           if python tools/gallery.py accept > result.md; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; fi
       - name: Thumbnail
-        # Every entry still without one, so an entry accepted before thumbnails existed gets its own too; ffmpeg ships with the runner.
+        # Every entry still without one, so an entry accepted before thumbnails existed gets its own too; the runner image has no ffmpeg, so it is installed first.
         if: steps.file.outputs.ok == 'true'
-        run: python tools/gallery.py thumbs
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends ffmpeg
+          python tools/gallery.py thumbs
       - name: Commit
         if: steps.file.outputs.ok == 'true'
         env:
