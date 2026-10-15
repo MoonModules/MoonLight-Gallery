@@ -84,7 +84,7 @@ def problems(entry: dict) -> list:
     if not entry["description"]:
         found.append("What it does: say what it shows or does.")
     if not entry["media"]:
-        found.append("Picture or video: add one, so people can see it before installing it.")
+        found.append("Picture or video: put a picture or video in this field, so people can see it before installing it; one in another field or in a comment is not read.")
     if not entry["firmware"]:
         found.append("MoonLight version: name the version you made it on.")
     if not entry["licensed"]:

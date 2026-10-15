@@ -81,6 +81,12 @@ class Refusing(unittest.TestCase):
         self.assertTrue(any(p.startswith("Picture or video") for p in found))
         self.assertTrue(any(p.startswith("License") for p in found))
 
+    def test_a_picture_outside_its_field_is_not_read_and_the_message_says_where(self):
+        moved = BODY.replace("![drift](https://github.com/user-attachments/assets/1234-abcd)", "")
+        moved = moved.replace("### Picture or video", "![drift](https://github.com/user-attachments/assets/1234-abcd)\n\n### Picture or video")
+        found = gallery.problems(gallery.parse(moved))
+        self.assertTrue(any(p.startswith("Picture or video") and "another field" in p for p in found))
+
     def test_an_unknown_kind_is_refused(self):
         self.assertTrue(any(p.startswith("Kind") for p in gallery.problems(gallery.parse(BODY.replace("\nPreset\n", "\nSomething\n")))))
 
