@@ -9,7 +9,7 @@ The discussion stays on that issue, and the file itself lives here once it is ac
 
 | Folder | What | Installed on a device as |
 |---|---|---|
-| `presets/` | presets: part of a device's state as one JSON document, from a palette alone to a whole effects stack | a file in `/.config/presets`, or the body of `PATCH /api/state` |
+| `presets/` | presets: a look (the effects stack), a palette, or both, as one JSON document; pins, brightness and layouts belong to one rig and are left out | a file in `/.config/presets`, or the body of `PATCH /api/state` |
 | `scripts/` | MoonLive scripts: effects (`.mle`), layouts (`.mll`), modifiers (`.mlm`), services (`.mls`) and palettes (`.mlp`) | a file in `/moonlive`, or pasted into the MoonLive editor |
 
 [`index.json`](index.json) lists every entry with its name, kind, file, picture or video, author, the MoonLight version it was made on, the issue where it was discussed, and its votes.
@@ -39,7 +39,7 @@ A check runs as soon as you submit and on every edit, and says in the issue what
 Once it passes, the issue is marked `ready`.
 People can comment, and you can edit the issue to improve the file.
 When a maintainer adds the `accepted` label, the file is added to the gallery, linked from the issue, and the issue closes.
-To update an accepted entry, reopen its issue, edit the file, and ask for it to be accepted again: the new file replaces the old one.
+To update an accepted entry, edit its issue, the file or the picture, and ask for it to be accepted again: the new file, picture and thumbnail replace the old ones.
 
 ## License
 
@@ -53,3 +53,7 @@ Accepting is adding `accepted`: [`accept.yml`](.github/workflows/accept.yml) run
 A contribution that no longer passes the check is not added; the issue says why and loses the label.
 [`check.yml`](.github/workflows/check.yml) runs on every submission and edit, and [`votes.yml`](.github/workflows/votes.yml) counts the likes on accepted issues once a day.
 Both use [`tools/gallery.py`](tools/gallery.py), whose tests run on every change to it.
+
+An accepted entry is a snapshot of its issue. Editing the issue afterwards runs only the check, so the gallery keeps the old file and picture until you accept it again: remove `accepted` and add it back, and the entry, its file and its thumbnail are replaced with what the issue holds now. That is the review step, which is why it is not automatic.
+
+The issue is the record. A fix to an accepted file goes into the issue's File field as well as the repo, or accepting again puts the old file back; the check runs on that edit and shows `needs-fix` first if the file is refused.
