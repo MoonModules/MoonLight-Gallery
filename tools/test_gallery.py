@@ -33,7 +33,7 @@ A slow blue noise field.
 ### File
 
 ```text
-{"Drivers": {"palette": "Ocean", "brightness": 40}}
+{"Drivers": {"palette": "Ocean"}}
 ```
 
 ### License
@@ -49,7 +49,7 @@ class ReadingAnIssue(unittest.TestCase):
         self.assertEqual(e["name"], "Ocean Drift")
         self.assertEqual(e["media"], "https://github.com/user-attachments/assets/1234-abcd")
         self.assertEqual(e["firmware"], "6.1.0")
-        self.assertEqual(json.loads(e["file"]), {"Drivers": {"palette": "Ocean", "brightness": 40}})
+        self.assertEqual(json.loads(e["file"]), {"Drivers": {"palette": "Ocean"}})
         self.assertTrue(e["licensed"])
 
     def test_a_complete_contribution_has_nothing_to_fix(self):
@@ -63,16 +63,16 @@ class ReadingAnIssue(unittest.TestCase):
 
 class Refusing(unittest.TestCase):
     def test_a_preset_that_is_not_json_says_where(self):
-        e = gallery.parse(BODY.replace('"brightness": 40}}', '"brightness": 40'))
+        e = gallery.parse(BODY.replace('"Ocean"}}', '"Ocean"'))
         self.assertTrue(any("not valid JSON" in p for p in gallery.problems(e)))
 
     def test_a_preset_must_name_modules(self):
-        e = gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean", "brightness": 40}}', "[1, 2]"))
+        e = gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean"}}', "[1, 2]"))
         self.assertTrue(any("JSON object" in p for p in gallery.problems(e)))
 
     def test_a_flat_preset_from_an_older_moonlight_is_refused_with_the_conversion(self):
         flat = '{"captures": "Effects", "Effects.0.type": "Layer", "Effects.enabled": true}'
-        e = gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean", "brightness": 40}}', flat))
+        e = gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean"}}', flat))
         self.assertTrue(any("flat format" in p and "restore" in p for p in gallery.problems(e)))
 
     def test_no_picture_and_no_license_are_both_named(self):
@@ -80,6 +80,22 @@ class Refusing(unittest.TestCase):
         found = gallery.problems(e)
         self.assertTrue(any(p.startswith("Picture or video") for p in found))
         self.assertTrue(any(p.startswith("License") for p in found))
+
+    def test_a_look_a_palette_or_both_is_accepted(self):
+        for doc in ('{"Effects": {"$patch": "replace", "Layer": {"type": "Layer"}}}', '{"Drivers": {"palette": "Ocean"}}',
+                    '{"Effects": {"Layer": {"type": "Layer"}}, "Drivers": {"palette": "spectrum.mlp"}}'):
+            self.assertEqual(gallery.problems(gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean"}}', doc))), [])
+
+    def test_a_preset_setting_a_rig_is_refused(self):
+        for doc in ('{"Drivers": {"palette": "Ocean", "brightness": 40}}', '{"Effects": {}, "Layouts": {}}', '{"Layouts": {"Grid": {"width": 16}}}',
+                    '{"Effects": {}, "Drivers": {"palette": "Ocean", "brightness": 40}}'):
+            found = gallery.problems(gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean"}}', doc)))
+            self.assertTrue(any("a look, a palette or both" in p for p in found), doc)
+
+    def test_a_modules_live_json_is_refused_with_the_state_document_to_paste(self):
+        live = '{"name": "Effects", "type": "Effects", "controls": [], "children": []}'
+        found = gallery.problems(gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean"}}', live)))
+        self.assertTrue(any("live JSON" in p and "{ }" in p for p in found))
 
     def test_a_picture_outside_its_field_is_not_read_and_the_message_says_where(self):
         moved = BODY.replace("![drift](https://github.com/user-attachments/assets/1234-abcd)", "")
@@ -110,7 +126,7 @@ class Filing(unittest.TestCase):
             self.assertEqual(len(json.loads((root / "index.json").read_text())), 1)
 
     def test_a_script_goes_to_scripts_with_its_kinds_extension(self):
-        body = BODY.replace("\nPreset\n", "\nEffect script\n").replace('{"Drivers": {"palette": "Ocean", "brightness": 40}}', "void loop() {}")
+        body = BODY.replace("\nPreset\n", "\nEffect script\n").replace('{"Drivers": {"palette": "Ocean"}}', "void loop() {}")
         with tempfile.TemporaryDirectory() as d:
             path = gallery.accept(gallery.parse(body), 12, "someone", "", Path(d))
             self.assertEqual(path.name, "0012-ocean-drift.mle")

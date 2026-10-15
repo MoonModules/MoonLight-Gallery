@@ -1,1 +1,72 @@
-{"name":"Effects","type":"Effects","role":"generic","enabled":true,"respectsEnabled":true,"tickTimeUs":56502,"classSize":136,"dynamicBytes":0,"controls":[],"children":[{"name":"Layer","type":"Layer","role":"layer","enabled":true,"respectsEnabled":true,"tickTimeUs":349,"classSize":808,"dynamicBytes":1081348,"status":"384×256×1","severity":"status","controls":[{"name":"blendMode","type":"select","value":1,"options":["alpha","additive"]},{"name":"opacity","type":"uint8","value":255,"min":0,"max":255}],"children":[{"name":"StarField","type":"StarFieldEffect","role":"effect","enabled":true,"respectsEnabled":true,"tickTimeUs":38,"classSize":176,"dynamicBytes":4080,"tags":"💫🖌️","controls":[{"name":"speed","type":"uint8","value":30,"min":0,"max":30},{"name":"numStars","type":"uint8","value":255,"min":1,"max":255},{"name":"blur","type":"uint8","value":255,"min":0,"max":255},{"name":"usePalette","type":"bool","value":false}]},{"name":"RippleXZ","type":"RippleXZModifier","role":"modifier","enabled":true,"respectsEnabled":true,"tickTimeUs":0,"classSize":128,"dynamicBytes":0,"tags":"💫","controls":[{"name":"shrink","type":"bool","value":false},{"name":"towardsX","type":"bool","value":true},{"name":"towardsZ","type":"bool","value":true}]}]},{"name":"Layer-2","type":"Layer","role":"layer","enabled":true,"respectsEnabled":true,"tickTimeUs":42565,"classSize":808,"dynamicBytes":294912,"status":"384×256×1","severity":"status","controls":[{"name":"blendMode","type":"select","value":1,"options":["alpha","additive"]},{"name":"opacity","type":"uint8","value":60,"min":0,"max":255}],"children":[{"name":"MoonLive","type":"MoonLiveEffect","role":"effect","enabled":true,"respectsEnabled":true,"tickTimeUs":42556,"classSize":1688,"dynamicBytes":1479524,"tags":"💫🖌️","status":"4848 B, controls 5/8","severity":"status","controls":[{"name":"script","type":"filepath","value":"fluid.mle","dir":"/moonlive","ext":".mle","tmpl":"class NewEffect {\n  byte bpm = 60;\n\n  void defineControls() {\n    addControl(\"bpm\", bpm, 1, 255);\n  }\n\n  void tick() {\n    fill(scale(beat(bpm, t), 256), 0, 100);\n  }\n}\n"},{"name":"jets","type":"uint8","value":3,"default":3,"min":1,"max":6},{"name":"swirl","type":"uint8","value":90,"default":90,"min":0,"max":255},{"name":"zoom","type":"uint8","value":30,"default":30,"min":1,"max":255},{"name":"force","type":"uint8","value":140,"default":140,"min":0,"max":255},{"name":"persistence","type":"uint8","value":170,"default":170,"min":0,"max":255}]}]},{"name":"Layer-3","type":"Layer","role":"layer","enabled":true,"respectsEnabled":true,"tickTimeUs":13571,"classSize":808,"dynamicBytes":294912,"status":"384×256×1","severity":"status","controls":[{"name":"blendMode","type":"select","value":1,"options":["alpha","additive"]},{"name":"opacity","type":"uint8","value":212,"min":0,"max":255}],"children":[{"name":"ColorTrails","type":"ColorTrailsEffect","role":"effect","enabled":true,"respectsEnabled":true,"tickTimeUs":13560,"classSize":376,"dynamicBytes":1477120,"tags":"💫🖌️💨🌫️","controls":[{"name":"speed","type":"uint8","value":255,"min":0,"max":255},{"name":"flow","type":"uint8","value":83,"min":0,"max":255},{"name":"flowSpeed","type":"uint8","value":39,"min":0,"max":255},{"name":"scale","type":"uint8","value":255,"min":1,"max":255},{"name":"persistence","type":"uint8","value":255,"min":0,"max":255},{"name":"colorSpeed","type":"uint8","value":0,"min":0,"max":255},{"name":"size","type":"uint8","value":13,"min":0,"max":255},{"name":"mode","type":"select","value":1,"options":["All","Orbital","Lissajous","Border"]},{"name":"flowType","type":"select","value":0,"options":["Noise","Radial out","Radial in"]}]}]}]}
+{
+  "Effects": {
+    "$patch": "replace",
+    "enabled": true,
+    "Layer": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 255,
+      "enabled": true,
+      "StarField": {
+        "type": "StarFieldEffect",
+        "$patch": "replace",
+        "speed": 30,
+        "numStars": 255,
+        "blur": 255,
+        "usePalette": false,
+        "enabled": true
+      },
+      "RippleXZ": {
+        "type": "RippleXZModifier",
+        "$patch": "replace",
+        "shrink": false,
+        "towardsX": true,
+        "towardsZ": true,
+        "enabled": true
+      }
+    },
+    "Layer-2": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 60,
+      "enabled": true,
+      "MoonLive": {
+        "type": "MoonLiveEffect",
+        "$patch": "replace",
+        "script": "fluid.mle",
+        "jets": 3,
+        "swirl": 90,
+        "zoom": 30,
+        "force": 140,
+        "persistence": 170,
+        "enabled": true
+      }
+    },
+    "Layer-3": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 212,
+      "enabled": true,
+      "ColorTrails": {
+        "type": "ColorTrailsEffect",
+        "$patch": "replace",
+        "speed": 255,
+        "flow": 83,
+        "flowSpeed": 39,
+        "scale": 255,
+        "persistence": 255,
+        "colorSpeed": 0,
+        "size": 13,
+        "mode": 1,
+        "flowType": 0,
+        "enabled": true
+      }
+    }
+  },
+  "Drivers": {
+    "palette": "spectrum.mlp"
+  }
+}

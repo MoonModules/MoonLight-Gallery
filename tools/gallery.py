@@ -74,6 +74,17 @@ def parse(body: str) -> dict:
     }
 
 
+def look_or_palette(doc: dict) -> bool:
+    """A look (Effects), a palette (Drivers setting its palette and nothing else) or a look with its palette, the presets that fit any rig; the app applies these without asking. A `$` key is the file's own, such as its pad."""
+    keys = [k for k in doc if not k.startswith("$")]
+    if not keys or any(k not in ("Effects", "Drivers") for k in keys):
+        return False
+    if "Drivers" not in keys:
+        return True
+    drivers = doc["Drivers"]
+    return isinstance(drivers, dict) and bool(drivers) and all(k in ("palette", "paletteScript") for k in drivers)
+
+
 def problems(entry: dict) -> list:
     """What keeps the contribution from being accepted, in words a contributor can act on; empty when nothing does."""
     found = []
@@ -101,9 +112,13 @@ def problems(entry: dict) -> list:
             found.append(f"File: not valid JSON ({e.msg} at line {e.lineno}).")
         else:
             if not isinstance(doc, dict) or not doc:
-                found.append("File: a preset is a JSON object naming the modules it sets, such as {\"Drivers\": {\"brightness\": 40}}.")
+                found.append("File: a preset is a JSON object naming the module it sets, such as {\"Effects\": {...}}.")
             elif "captures" in doc or any("." in k for k in doc):
                 found.append("File: this is the flat format an older MoonLight saved presets in; back up and restore the device holding it, which converts it, then paste the file again.")
+            elif "type" in doc and isinstance(doc.get("controls"), list):
+                found.append("File: this is a module's live JSON; paste the Effects card's { } state document instead, which starts with {\"Effects\": ...}.")
+            elif not look_or_palette(doc):
+                found.append("File: a preset is a look, a palette or both: \"Effects\", and \"Drivers\" with only its palette, such as {\"Drivers\": {\"palette\": \"Ocean\"}}. Pins and geometry belong to one rig.")
     return found
 
 
