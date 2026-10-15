@@ -57,11 +57,11 @@
     "name": "Meiastrom",
     "file": "presets/0005-meiastrom.json",
     "description": "A mixture of various power fx (color trails , fluid with a sprinkling of pixlels. As with all of \nvol1 this is inteded be used with the spectrum audiot pallete.\n\ndesigned on a 256x256 matrix but will work on anything in vairous, often pleasing ways\n\n<img width=\"64\" height=\"44\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/f3115a77-99cf-4b61-b594-5c8307b332f7\" />\n\nhint: then hue slider on the drivers panel (if using a  curretnr  release.",
-    "media": "https://github.com/user-attachments/assets/e3486038-584a-4acf-a4c4-b2325589469c",
+    "media": "https://github.com/user-attachments/assets/4d1d9bd5-a6ee-4bfe-9040-70f27575153e",
     "firmware": "6.0.0-dev.10",
     "author": "wompslab",
     "url": "https://github.com/MoonModules/MoonLight-Gallery/issues/5",
-    "votes": 0,
+    "votes": 1,
     "thumb": "thumbs/0005.webp"
   }
 ]
