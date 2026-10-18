@@ -52,6 +52,14 @@ class ReadingAnIssue(unittest.TestCase):
         self.assertEqual(json.loads(e["file"]), {"Drivers": {"palette": "Ocean"}})
         self.assertTrue(e["licensed"])
 
+    def test_a_file_pasted_with_its_own_fence_inside_the_fields_reads_as_the_file(self):
+        nested = BODY.replace('{"Drivers": {"palette": "Ocean"}}', '```json\n{"Drivers": {"palette": "Ocean"}}\n```')
+        self.assertEqual(json.loads(gallery.parse(nested)["file"]), {"Drivers": {"palette": "Ocean"}})
+
+    def test_quotes_typed_as_a_fence_read_as_a_fence(self):
+        quoted = BODY.replace("```text\n", "\'\'\'\n").replace("\n```\n", "\n\'\'\'\n")
+        self.assertEqual(gallery.problems(gallery.parse(quoted)), [])
+
     def test_a_complete_contribution_has_nothing_to_fix(self):
         self.assertEqual(gallery.problems(gallery.parse(BODY)), [])
 
@@ -96,6 +104,15 @@ class Refusing(unittest.TestCase):
         live = '{"name": "Effects", "type": "Effects", "controls": [], "children": []}'
         found = gallery.problems(gallery.parse(BODY.replace('{"Drivers": {"palette": "Ocean"}}', live)))
         self.assertTrue(any("live JSON" in p and "{ }" in p for p in found))
+
+    def test_text_after_the_file_is_named_with_the_field_it_belongs_in(self):
+        found = gallery.problems(gallery.parse(BODY.replace('"Ocean"}}\n', '"Ocean"}}\n\nHint: lower the persistence\n')))
+        self.assertEqual(found, ["File: only the file goes here; move the text after it, such as a hint, to What it does."])
+
+    def test_a_version_the_firmware_card_would_not_show_is_refused(self):
+        found = gallery.problems(gallery.parse(BODY.replace("6.1.0", "6.10")))
+        self.assertTrue(any(p.startswith("MoonLight version: write it as the Firmware card shows it") for p in found))
+        self.assertEqual(gallery.problems(gallery.parse(BODY.replace("6.1.0", "6.1.0-dev.10"))), [])
 
     def test_a_picture_outside_its_field_is_not_read_and_the_message_says_where(self):
         moved = BODY.replace("![drift](https://github.com/user-attachments/assets/1234-abcd)", "")

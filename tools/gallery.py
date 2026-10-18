@@ -53,10 +53,13 @@ def sections(body: str) -> dict:
     return {k: ("" if v == NO_RESPONSE else v) for k, v in out.items()}
 
 
-def code_block(text: str) -> str:
-    """The content of the first fenced block, which the form's file field is rendered as; the text itself when there is none."""
-    m = re.search(r"^```[^\n]*\n(.*?)\n?^```", text, re.MULTILINE | re.DOTALL)
-    return m.group(1) if m else text
+FENCE_RE = re.compile(r"^\s*(```|~~~|''')[\w-]*\s*$")   # a fence line, with or without a language
+VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(-[\w.]+)?$")   # as the Firmware card shows it, such as 6.1.0 or 6.1.0-dev
+
+
+def file_text(text: str) -> str:
+    """The file in the form's File field. GitHub renders the field as a fenced block, and a contributor often pastes a fenced block into it too, or types quotes for the fence, so every fence line is markup rather than file."""
+    return "\n".join(line for line in text.replace("\r\n", "\n").split("\n") if not FENCE_RE.match(line)).strip()
 
 
 def parse(body: str) -> dict:
@@ -69,7 +72,7 @@ def parse(body: str) -> dict:
         "description": s.get("What it does", ""),
         "media": media[0] if media else "",
         "firmware": s.get("MoonLight version", ""),
-        "file": code_block(s.get("File", "")),
+        "file": file_text(s.get("File", "")),
         "licensed": "- [x]" in s.get("License", "").lower(),
     }
 
@@ -98,6 +101,8 @@ def problems(entry: dict) -> list:
         found.append("Picture or video: put a picture or video in this field, so people can see it before installing it; one in another field or in a comment is not read.")
     if not entry["firmware"]:
         found.append("MoonLight version: name the version you made it on.")
+    elif not VERSION_RE.match(entry["firmware"]):
+        found.append(f"MoonLight version: write it as the Firmware card shows it, such as 6.1.0; {entry['firmware']} reads as another version.")
     if not entry["licensed"]:
         found.append("License: tick the CC0 box, or the file cannot be shared here.")
     text = entry["file"]
@@ -107,10 +112,12 @@ def problems(entry: dict) -> list:
         found.append(f"File: larger than {MAX_FILE_BYTES // 1024} KB, which is more than a preset or script needs.")
     elif entry["kind"] == "Preset":
         try:
-            doc = json.loads(text)
+            doc, end = json.JSONDecoder().raw_decode(text)
         except json.JSONDecodeError as e:
             found.append(f"File: not valid JSON ({e.msg} at line {e.lineno}).")
         else:
+            if text[end:].strip():
+                found.append("File: only the file goes here; move the text after it, such as a hint, to What it does.")
             if not isinstance(doc, dict) or not doc:
                 found.append("File: a preset is a JSON object naming the module it sets, such as {\"Effects\": {...}}.")
             elif "captures" in doc or any("." in k for k in doc):
