@@ -1,0 +1,69 @@
+{
+  "Effects": {
+    "$patch": "replace",
+    "enabled": true,
+    "Layer": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 255,
+      "enabled": true,
+      "StarField": {
+        "type": "StarFieldEffect",
+        "$patch": "replace",
+        "speed": 30,
+        "numStars": 255,
+        "blur": 255,
+        "usePalette": false,
+        "enabled": true
+      },
+      "RippleXZ": {
+        "type": "RippleXZModifier",
+        "$patch": "replace",
+        "shrink": false,
+        "towardsX": true,
+        "towardsZ": true,
+        "enabled": true
+      }
+    },
+    "Layer-2": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 60,
+      "enabled": true,
+      "MoonLive": {
+        "type": "MoonLiveEffect",
+        "$patch": "replace",
+        "script": "fluid.mle",
+        "jets": 3,
+        "swirl": 19,
+        "zoom": 167,
+        "force": 0,
+        "persistence": 81,
+        "enabled": true
+      }
+    },
+    "Layer-3": {
+      "type": "Layer",
+      "$patch": "replace",
+      "blendMode": 1,
+      "opacity": 212,
+      "enabled": true,
+      "ColorTrails": {
+        "type": "ColorTrailsEffect",
+        "$patch": "replace",
+        "speed": 255,
+        "flow": 83,
+        "flowSpeed": 39,
+        "scale": 255,
+        "persistence": 255,
+        "colorSpeed": 0,
+        "size": 13,
+        "mode": 1,
+        "flowType": 0,
+        "enabled": true
+      }
+    }
+  }
+}
